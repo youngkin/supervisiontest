@@ -1,0 +1,19 @@
+#!/usr/bin/env escript
+main(_) ->
+	io:format("Hello World!~n"),
+%	io:format("net_kernel:start(): ~p~n",
+%	[net_kernel:start(
+%		['escript@richsmac.ecollege-dev.com',
+%		longnames]
+%	)
+%	]),
+		io:format("net_adm:ping(): ~p~n", 
+			[net_adm:ping('suptest@richsmac.ecollege-dev.com')]),	
+		io:format("net_adm:names(): ~p~n", 
+			[rpc:call('suptest@richsmac.ecollege-dev.com',
+			 	net_adm, names, [])
+			 ]),
+		io:format("rpc:call(): ~p~n", 
+			[rpc:call('suptest@richsmac.ecollege-dev.com',
+			 	suptest_hello_world, say_hello, [])
+			 ]).

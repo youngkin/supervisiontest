@@ -1,0 +1,9 @@
+backend_version=R16B
+builder=internal
+eclipse.preferences.version=1
+external_includes=
+external_modules=
+include_dirs=include;
+nukeOutputOnClean=false
+output_dir=ebin;
+source_dirs=src;
