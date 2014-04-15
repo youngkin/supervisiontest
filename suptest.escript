@@ -9,6 +9,12 @@ main(_) ->
 	io:format("net_adm:ping(): ~p~n", 
 		[net_adm:ping('suptest@richsmac.ecollege-dev.com')]),	
 
+	%% Wait until system stabilizes
+	io:format("rpc:call(timer:sleep()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			timer, sleep, [1000])
+		 ]),
+
 	io:format("~n************* CONFIRM sunny day *************~n"),
 
 	io:format("rpc:call(suptest_calls_hello_world:say_hello()): ~p~n", 

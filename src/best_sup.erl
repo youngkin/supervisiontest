@@ -32,7 +32,8 @@
 
 start_link() ->
     io:format("******************* best_sup: START_LINK~n", []),
-%% 	lager:info("!!!!!!!!!!!!!!!!!!!! Test Lager install !!!!!!!!!!", []),
+ 	lager:info("!!!!!!!!!!!!!!!!!!!! Test Lager install !!!!!!!!!!", []),
+ 	lager:error("!!!!!!!!!!!!!!!!!!!! Test Lager ERROR message !!!!!!!!!!", []),
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 %% ===================================================================

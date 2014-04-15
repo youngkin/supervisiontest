@@ -10,6 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
+	lager:start(),
     suptest_sup:start_link().
 
 stop(_State) ->

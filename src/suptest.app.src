@@ -14,9 +14,7 @@
   {registered, []},
   {applications, [
                   kernel,
-                  stdlib,
-                  compiler,
-                  syntax_tools
+                  stdlib
                  ]},
   {mod, { suptest_app, []}},
   {env, []}
