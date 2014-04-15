@@ -1,0 +1,11 @@
+ebin/*
+.eunit
+erl_crash.dump
+test/*.beam
+documentation/*lock
+dist
+dist/*
+/ebin
+/eclipseBin
+fabfile/*.pyc
+log
