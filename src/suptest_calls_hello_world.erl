@@ -28,11 +28,11 @@ crash_hello() ->
 %% ====================================================================
 
 start_link() ->
-	io:format("******************* suptest_calls_hello_world: START_LINK~n", []),
+	lager:emergency("******************* suptest_calls_hello_world: START_LINK~n", []),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 init([]) ->
-	io:format("******************* suptest_calls_hello_world: INIT~n", []),
+	lager:emergency("******************* suptest_calls_hello_world: INIT~n", []),
     {ok, []}.
 
 %% ====================================================================
@@ -40,12 +40,12 @@ init([]) ->
 %% ====================================================================
 
 handle_call(hello, _From, State) ->
-    io:format("******************* suptest_calls_hello_world: HELLO~n", []),
+    lager:emergency("******************* suptest_calls_hello_world: HELLO~n", []),
 	Result = suptest_hello_world:say_hello(),
     {reply, {ok, Result}, State};
 
 handle_call(crash_hello, _From, State) ->
-    io:format("******************* suptest_calls_hello_world: CRASH!!!~n", []),
+    lager:emergency("******************* suptest_calls_hello_world: CRASH!!!~n", []),
 	Result = suptest_hello_world:crash(),
     {reply, Result, State};
 
@@ -60,7 +60,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 terminate(_Reason, _State) ->
-	io:format("******************* suptest_calls_hello_world: TERMINATE~n", []),
+	lager:emergency("******************* suptest_calls_hello_world: TERMINATE~n", []),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

@@ -31,7 +31,7 @@
 %% ===================================================================
 
 start_link() ->
-    io:format("******************* best_sup: START_LINK~n", []),
+    lager:emergency("******************* best_sup: START_LINK~n", []),
  	lager:info("!!!!!!!!!!!!!!!!!!!! Test Lager install !!!!!!!!!!", []),
  	lager:error("!!!!!!!!!!!!!!!!!!!! Test Lager ERROR message !!!!!!!!!!", []),
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
@@ -41,7 +41,14 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    io:format("******************* best_sup: INIT~n", []),
+    lager:emergency("******************* best_sup: INIT~n", []),
+	
+	%%
+	%% This sleep is put here to ensure that all children of non_std_sup have
+	%% been started and are fully initialized prior to the children of this
+	%% supervision tree being started.
+	%%
+	timer:sleep(1000),
 	
     BestStartsHello2 = ?CHILD(best_starts_hello2, worker),
     BestFriendlyFireVictim = ?CHILD(best_friendly_fire_victim, worker),

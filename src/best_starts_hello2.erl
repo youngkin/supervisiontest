@@ -39,7 +39,7 @@ get_hello_servers() ->
 	gen_server:call(?MODULE, get_hello_servers).
 	
 start_link() ->
-	io:format("******************* best_starts_hello2: START_LINK~n", []),
+	lager:emergency("******************* best_starts_hello2: START_LINK~n", []),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 %% ====================================================================
@@ -47,7 +47,7 @@ start_link() ->
 %% ====================================================================
 
 init([]) ->
-	io:format("******************* best_starts_hello2: INIT~n", []),
+	lager:emergency("******************* best_starts_hello2: INIT~n", []),
 	%%
 	%% Must be an async invocation or a deadlock will result.
 	%%
@@ -58,16 +58,16 @@ init([]) ->
     {ok, []}.
 
 handle_call(ping, _From, State) ->
-    io:format("******************* best_starts_hello2: PING~n", []),
+    lager:emergency("******************* best_starts_hello2: PING~n", []),
     {reply, {ok, pong}, State};
 
 handle_call(crash, _From, State) ->
-    io:format("******************* best_starts_hello2: CRASH!!!~n", []),
+    lager:emergency("******************* best_starts_hello2: CRASH!!!~n", []),
 	X=1,
     {reply, X=2, State};
 
 handle_call(get_hello_servers, _From, State) ->
-    io:format("******************* best_starts_hello2: get_hello_servers!!!~n", []),
+    lager:emergency("******************* best_starts_hello2: get_hello_servers!!!~n", []),
 	{reply, State, State};
 
 handle_call(_Request, _From, State) ->
@@ -99,7 +99,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 terminate(_Reason, _State) ->
-	io:format("******************* best_starts_hello2: TERMINATE~n", []),
+	lager:emergency("******************* best_starts_hello2: TERMINATE~n", []),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

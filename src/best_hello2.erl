@@ -32,7 +32,7 @@ crash_hello() ->
 %% ====================================================================
 
 init([]) ->
-	io:format("******************* best_hello2: INIT~n", []),
+	lager:emergency("******************* best_hello2: INIT~n", []),
     {ok, [], 1000}.
 
 %% ====================================================================
@@ -40,12 +40,12 @@ init([]) ->
 %% ====================================================================
 
 handle_call(hello, _From, State) ->
-    io:format("******************* best_hello2: HELLO~n", []),
+    lager:emergency("******************* best_hello2: HELLO~n", []),
 	Result = suptest_hello_world:say_hello(),
     {reply, {ok, Result}, State};
 
 handle_call(crash_hello, _From, State) ->
-    io:format("******************* best_hello2: CRASH!!!~n", []),
+    lager:emergency("******************* best_hello2: CRASH!!!~n", []),
 	Result = suptest_hello_world:crash(),
     {reply, Result, State};
 
@@ -57,19 +57,19 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_info({From, say_hello}, State) ->
-    io:format("******************* best_hello2:hendle_info(SAY_hell0) from PID ~p!!!~n", [self()]),	
+    lager:emergency("******************* best_hello2:hendle_info(SAY_hell0) from PID ~p!!!~n", [self()]),	
 	Result = suptest_hello_world:say_hello(),
 	From ! {say_hello_response, Result},
     {noreply, State};
 handle_info({_From, crash_hello}, State) ->
-    io:format("******************* best_hello2:hendle_info(CRASH_hell0)!!!~n", []),	
+    lager:emergency("******************* best_hello2:hendle_info(CRASH_hell0)!!!~n", []),	
 	_Result = suptest_hello_world:crash(),
     {noreply, State};
 handle_info(_Info, State) ->
     {noreply, State}.
 
 terminate(_Reason, _State) ->
-	io:format("******************* best_hello2: TERMINATE~n", []),
+	lager:emergency("******************* best_hello2: TERMINATE~n", []),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

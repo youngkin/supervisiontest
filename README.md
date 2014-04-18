@@ -1,7 +1,9 @@
-supervisiontest
+SupervisionTest
 ===============
 
-An Erlang demonstration of different supervision strategies along with different initialization strategies and failure scenarios
+An Erlang demonstration of different supervision strategies along with different 
+initialization strategies and failure scenarios.  It also demonstrates the use
+of the Basho Lager logging framework.
 
 Details
 ==============
@@ -12,7 +14,23 @@ and contain children that demonstrate "interesting" behaviors.
 
 **suptest_sup** is the root supervisor for the suptest application.  It has a
 reasonable restart strategy that results in any failed children (i.e., the 
-supervisors listed below) being restarted when/if they fail.
+supervisors listed below) being restarted when/if they fail.  In addition, it
+enforces a startup sequencing and dependency ordering between its child
+supervisors by using a rest_for_one restart stratgegy.
+
+**non_std_sup**, is a supervisor with children that don't follow the normal Erlang
+approach to state management by initializing their state within the init/1
+function.  Because of how startup and state management of the children is
+handled, a all_for_one restart strategy is used.
+	- **non_std_startup** is the only gen_server started directly from 	
+	  non_std_sup's init/1 function.  Its role is to start the remaining children
+	  and in the case of non_std_child1, setting its state.  Normally gen_servers
+	  establish their state in their init/1 functions but in this case this is
+	  handled by non_std_startup.
+	- **non_std_child-n**, where "n" is 1, 2, or 3, are a set of gen_servers that
+	  are started from non_std_startup.  non_std_child1 has its state established
+	  by non_std_startup after it completes its startup processing.  All 3 
+	  gen_servers support "ping" and "crash" functions.
 
 **crash_sup**, as the name suggests, implements an unforgiving restart strategy that
 causes the entire supervision tree, including the itself, to terminate and

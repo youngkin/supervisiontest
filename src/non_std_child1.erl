@@ -1,58 +1,57 @@
 %% @author uyounri
 %% @doc Demonstrates that a service under supervision tree "A" isn't affected
-%%      by failures in supervision tree "B". Also demonstrates that process
-%%		failures in the same supervision tree won't affect the availability of
-%%		this gen_server.  It is "best" in the sense that it is somewhat immune
-%%		to friendly fire by virtue of being supervised by a supervisor that has
-%%		protective restart semantics.
+%%      by failures in supervision tree "B".
 %%
 %%      The "crash" function provides a hook to force it to crash if desired.
 %% 
 
 
--module(best_friendly_fire_victim).
+-module(non_std_child1).
 
 -behaviour(gen_server).
 
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([start_link/0, ping/0, crash/0, x/0]).
+-export([start_link/0, ping/0, crash/0, set_state/1]).
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
-
+set_state(TheNewState) ->
+    gen_server:call(?MODULE, {set_state, TheNewState}).
+	
 ping() ->
     gen_server:call(?MODULE, ping).
 
 crash() ->
     gen_server:call(?MODULE, crash).
 
-x() ->
-	lager:emergency("******************** x~n)", []).
-
 %% ====================================================================
 %% Internal functions
 %% ====================================================================
 
 start_link() ->
-	lager:emergency("******************* best_friendly_fire_victim: START_LINK~n", []),
+	lager:emergency("******************* non_std_child1: START_LINK~n", []),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 init([]) ->
-	lager:emergency("******************* best_friendly_fire_victim: INIT~n", []),
+	lager:emergency("******************* non_std_child1: INIT~n", []),
     {ok, []}.
 
 %% ====================================================================
 %% Callbacks
 %% ====================================================================
 
+handle_call({set_state, TheNewState}, _From, _State) ->
+    lager:emergency("******************* non_std_child1: set_state(~p)~n", [TheNewState]),
+    {reply, {ok, pong}, TheNewState};
+
 handle_call(ping, _From, State) ->
-    lager:emergency("******************* best_friendly_fire_victim: PING~n", []),
+    lager:emergency("******************* non_std_child1: PING~n", []),
     {reply, {ok, pong}, State};
 
 handle_call(crash, _From, State) ->
-    lager:emergency("******************* best_friendly_fire_victim: CRASH!!!~n", []),
+    lager:emergency("******************* non_std_child1: CRASH!!!~n", []),
 	X=1,
     {reply, X=2, State};
 
@@ -67,7 +66,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 terminate(_Reason, _State) ->
-	lager:emergency("******************* best_friendly_fire_victim: TERMINATE~n", []),
+	lager:emergency("******************* non_std_child1: TERMINATE~n", []),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

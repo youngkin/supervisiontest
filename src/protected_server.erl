@@ -25,18 +25,18 @@ crash() ->
     gen_server:call(?MODULE, crash).
 
 x() ->
-	io:format("******************** x~n)", []).
+	lager:emergency("******************** x~n)", []).
 
 %% ====================================================================
 %% Internal functions
 %% ====================================================================
 
 start_link() ->
-	io:format("******************* protected_server: START_LINK~n", []),
+	lager:emergency("******************* protected_server: START_LINK~n", []),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 init([]) ->
-	io:format("******************* protected_server: INIT~n", []),
+	lager:emergency("******************* protected_server: INIT~n", []),
     {ok, []}.
 
 %% ====================================================================
@@ -44,11 +44,11 @@ init([]) ->
 %% ====================================================================
 
 handle_call(ping, _From, State) ->
-    io:format("******************* protected_server: PING~n", []),
+    lager:emergency("******************* protected_server: PING~n", []),
     {reply, {ok, pong}, State};
 
 handle_call(crash, _From, State) ->
-    io:format("******************* protected_server: CRASH!!!~n", []),
+    lager:emergency("******************* protected_server: CRASH!!!~n", []),
 	X=1,
     {reply, X=2, State};
 
@@ -63,7 +63,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 terminate(_Reason, _State) ->
-	io:format("******************* protected_server: TERMINATE~n", []),
+	lager:emergency("******************* protected_server: TERMINATE~n", []),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

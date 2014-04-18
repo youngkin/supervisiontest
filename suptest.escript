@@ -12,10 +12,23 @@ main(_) ->
 	%% Wait until system stabilizes
 	io:format("rpc:call(timer:sleep()): ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
-			timer, sleep, [1000])
+			timer, sleep, [5000])
 		 ]),
 
 	io:format("~n************* CONFIRM sunny day *************~n"),
+
+	io:format("rpc:call(non_std_child1:ping()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			non_std_child1, ping, [])
+		 ]),
+	io:format("rpc:call(non_std_child2:ping()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			non_std_child2, ping, [])
+		 ]),
+	io:format("rpc:call(non_std_child3:ping()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			non_std_child3, ping, [])
+		 ]),
 
 	io:format("rpc:call(suptest_calls_hello_world:say_hello()): ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
@@ -82,10 +95,22 @@ main(_) ->
 %%		 
 	io:format("~n************* CRASH protected_server *************~n"),
 
+	%% Wait a bit so we don't exceed the application's restart intensity
+	io:format("rpc:call(timer:sleep()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			timer, sleep, [1500])
+		 ]),
+
 	io:format("rpc:call(protected_server:crash()): ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
 			protected_server, crash, [])
 		 ]),
+	%% Wait until the process is restarted
+	io:format("rpc:call(timer:sleep()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			timer, sleep, [100])
+		 ]),
+
 	io:format("~n************* protected_server on better_sup RESTARTED *************~n"),
 
 	io:format("rpc:call(protected_server:ping()): ~p~n", 
@@ -97,6 +122,12 @@ main(_) ->
 %% CRASH & CONFIRM best_sup & children start and are operational	
 %%	 
 	io:format("~n************* CRASH & CONFIRM best_sup and children RESTARTED *************~n"),
+
+	%% Wait a bit so we don't exceed the application's restart intensity
+	io:format("rpc:call(timer:sleep()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			timer, sleep, [1500])
+		 ]),
 
 	io:format("rpc:call(best_calls_hello2:crash_hello()): ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
@@ -125,11 +156,39 @@ main(_) ->
 			best_starts_hello2, ping, [])
 		 ]),
 %%
+%% CRASH THE WORLD test
+%%
+	io:format("~n************** CRASH THE WORLD!!!! ***************~n"),
+	io:format("***** Even best_friendly_fire_victim is unreachable *****~n"),
+	
+	%% Wait a bit so we don't exceed the application's restart intensity
+	io:format("rpc:call(timer:sleep()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			timer, sleep, [1500])
+		 ]),
+
+    %% Call crash() twice to exceed restart intensity which will cause the entire
+	%% application, i.e., all supervision trees, to terminate.
+	io:format("rpc:call(non_std_child1:crash()) on suptest_app: ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			non_std_child1, crash, [])
+		 ]),
+	io:format("rpc:call(non_std_child1:crash()) on suptest_app: ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			non_std_child1, crash, [])
+		 ]),
+		 
+	io:format("rpc:call(best_friendly_fire_victim:ping()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			best_friendly_fire_victim, ping, [])
+		 ]),
+
+%%
 %% CLEANUP & STOP test
 %%
 	io:format("~n************** STOP ***************~n"),
 	
-	io:format("rpc:call(init:stop()) on suptest_app: ~p~n", 
+	io:format("rpc:call(init:stop()) on suptest VM: ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
 			init, stop, [])
 		 ]).

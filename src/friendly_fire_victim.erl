@@ -24,11 +24,11 @@ ping() ->
 %% ====================================================================
 
 start_link() ->
-	io:format("******************* friendly_fire_victim: START_LINK~n", []),
+	lager:emergency("******************* friendly_fire_victim: START_LINK~n", []),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 init([]) ->
-	io:format("******************* friendly_fire_victim: INIT~n", []),
+	lager:emergency("******************* friendly_fire_victim: INIT~n", []),
     {ok, []}.
 
 %% ====================================================================
@@ -36,11 +36,11 @@ init([]) ->
 %% ====================================================================
 
 handle_call(ping, _From, State) ->
-    io:format("******************* friendly_fire_victim: PING~n", []),
+    lager:emergency("******************* friendly_fire_victim: PING~n", []),
     {reply, {ok, pong}, State};
 
 handle_call(crash_hello, _From, State) ->
-    io:format("******************* friendly_fire_victim: CRASH!!!~n", []),
+    lager:emergency("******************* friendly_fire_victim: CRASH!!!~n", []),
 	Result = suptest_hello_world:crash(),
     {reply, Result, State};
 
@@ -55,7 +55,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 terminate(_Reason, _State) ->
-	io:format("******************* friendly_fire_victim: TERMINATE~n", []),
+	lager:emergency("******************* friendly_fire_victim: TERMINATE~n", []),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

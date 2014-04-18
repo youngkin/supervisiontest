@@ -11,8 +11,10 @@
 
 start(_StartType, _StartArgs) ->
 	lager:start(),
+	lager:emergency("******************* suptest_app STARTING!!!!", []),
     suptest_sup:start_link().
 
 stop(_State) ->
+	lager:emergency("******************* suptest_app STOPPING!!!!", []),
     ok.
 
