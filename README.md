@@ -5,6 +5,8 @@ An Erlang demonstration of different supervision strategies along with different
 initialization strategies and failure scenarios.  It also demonstrates the use
 of the Basho Lager logging framework.
 
+
+
 Details
 ==============
 
