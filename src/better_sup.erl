@@ -36,12 +36,7 @@ start_link() ->
 
 init([]) ->
     lager:emergency("******************* suptest_better_sup: INIT~n", []),
-	%%
-	%% This sleep is put here to ensure that all children of non_std_sup have
-	%% been started and are fully initialized prior to the children of this
-	%% supervision tree being started.
-	%%
-	timer:sleep(1000),
+
 	ProtectedServer = {protected_server, {protected_server, start_link, []},
 						permanent, 5000, worker, [protected_server]},
     {ok, { {one_for_one, 1, 1}, [ProtectedServer] } }.

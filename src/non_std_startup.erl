@@ -42,17 +42,40 @@ init([]) ->
     {ok, []}.
 
 
-
+%%
+%% Starts the app in 2 major phases, the primary and secondary phases.  The
+%% primary phase starts gen_servers that have some post-startup configuration
+%% requirements.
+%%
+%% The secondary phase includes gen_servers that can't be started until all
+%% gen_servers in the primary phase have completed initialization.
+%%
 start() ->
-  start(get_startup_phases()).
+  	start(get_startup_phases()),
+	start_the_rest(get_secondary_startup_phases()).
 
+%%
+%% This function definition is for the primary startup phase.
+%%
 start([]) ->
-  ok;
-
+  	ok;
 start([Phase|Phases]) ->
   case start_phase(Phase) of
     ok ->
       start(Phases);
+    ERROR ->
+      ERROR
+  end.
+  
+%%
+%% This function definition is for the secondary startup phase
+%%
+start_the_rest([]) ->
+  	ok;
+start_the_rest([SecondaryPhase|SecondaryPhases]) ->
+  case start_secondary_phase(SecondaryPhase) of
+    ok ->
+      start_the_rest(SecondaryPhases);
     ERROR ->
       ERROR
   end.
@@ -62,6 +85,19 @@ start_phase({Specs,Callback}) ->
 		fun(E) ->
 			lager:emergency("******************* non_std_startup: Starting ~p...~n",[E]),
 			case non_std_sup:start_child(E) of
+				{ok, Pid} -> {ok, Pid};
+				[Error] -> {error, Error}
+			end
+		end,
+		Specs
+	),
+	call(Callback).
+
+start_secondary_phase({Specs,Callback}) ->
+	lists:foreach(
+		fun(E) ->
+			lager:emergency("******************* non_std_startup: Starting ~p...~n",[E]),
+			case suptest_sup:start_child(E) of
 				{ok, Pid} -> {ok, Pid};
 				[Error] -> {error, Error}
 			end
@@ -112,6 +148,48 @@ get_startup_phases() ->
     },
     {
       [Child3],
+      undefined
+    }
+  ].
+
+get_secondary_startup_phases() ->
+  CrashSup = {
+              crash_sup,
+              {crash_sup,start_link, []},
+              permanent,
+              2000,
+              supervisor,
+              [crash_sup]
+           },
+
+  BetterSup = {
+              better_sup,
+              {better_sup,start_link, []},
+              permanent,
+              2000,
+              supervisor,
+              [better_sup]
+           },
+  BestSup = {
+			  best_sup,
+              {best_sup,start_link, []},
+              permanent,
+              2000,
+              supervisor,
+              [best_sup]
+	},
+  
+  [           
+    {
+      [CrashSup],
+      undefined
+    },
+    {
+      [BetterSup],
+      undefined
+    },
+    {
+      [BestSup],
       undefined
     }
   ].

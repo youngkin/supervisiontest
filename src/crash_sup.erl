@@ -32,12 +32,7 @@ start_link() ->
 init([]) ->
 %%     HelloWorldServer = ?CHILD(suptest_hello_world, worker),
     lager:emergency("******************* crash_sup: INIT~n", []),
-	%%
-	%% This sleep is put here to ensure that all children of non_std_sup have
-	%% been started and are fully initialized prior to the children of this
-	%% supervision tree being started.
-	%%
-	timer:sleep(1000),
+
 	HelloWorldServer = {suptest_hello_world, {suptest_hello_world, start_link, []},
 						permanent, 5000, worker, [suptest_hello_world]},
 	SupTestsCallsHelloWorld = {suptest_calls_hello_world, {suptest_calls_hello_world, start_link, []},

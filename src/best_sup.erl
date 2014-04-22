@@ -43,13 +43,6 @@ start_link() ->
 init([]) ->
     lager:emergency("******************* best_sup: INIT~n", []),
 	
-	%%
-	%% This sleep is put here to ensure that all children of non_std_sup have
-	%% been started and are fully initialized prior to the children of this
-	%% supervision tree being started.
-	%%
-	timer:sleep(1000),
-	
     BestStartsHello2 = ?CHILD(best_starts_hello2, worker),
     BestFriendlyFireVictim = ?CHILD(best_friendly_fire_victim, worker),
     BestCallsHello2 = ?CHILD(best_calls_hello2, worker),
