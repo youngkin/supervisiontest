@@ -38,7 +38,20 @@ start_link() ->
 
 init([]) ->
 	lager:emergency("******************* non_std_startup: INIT~n", []),
+	%% Using gen_server:cast/2 makes the startup process asynchronous.  This may
+	%% in fact be fine, but it can bite you if you're not careful.  See 
+	%% http://ferd.ca/it-s-about-the-guarantees.html for more details.
+	%%
+	%% You can experiment with different approaches, synchronous and 
+	%% asynchronous (via cast) by un/commenting them as desired.
+	
+	%% Asynch approach
 	gen_server:cast(?MODULE, start_children),
+
+	%% Synch approach - doesn't work.  This causes a deadlock because non_std_sup
+	%% is blocked waiting for this init/1 invocation to complete before accepting
+	%% the start_child/1 request.
+%% 	start(),
     {ok, []}.
 
 
@@ -86,6 +99,7 @@ start_phase({Specs,Callback}) ->
 			lager:emergency("******************* non_std_startup: Starting ~p...~n",[E]),
 			case non_std_sup:start_child(E) of
 				{ok, Pid} -> {ok, Pid};
+				{error,{already_started,Pid}} -> {ok, Pid};
 				[Error] -> {error, Error}
 			end
 		end,
@@ -93,12 +107,18 @@ start_phase({Specs,Callback}) ->
 	),
 	call(Callback).
 
+%%
+%% This function starts children in the grandparent supervisor, suptest_sup.
+%% That's what distinguishes it from start_phase/2 which starts children in the
+%% parent supervisor.
+%%
 start_secondary_phase({Specs,Callback}) ->
 	lists:foreach(
 		fun(E) ->
 			lager:emergency("******************* non_std_startup: Starting ~p...~n",[E]),
 			case suptest_sup:start_child(E) of
 				{ok, Pid} -> {ok, Pid};
+				{error,{already_started,Pid}} -> {ok, Pid};
 				[Error] -> {error, Error}
 			end
 		end,

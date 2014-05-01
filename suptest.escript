@@ -17,9 +17,9 @@ main(_) ->
 
 	io:format("~n************* CONFIRM sunny day *************~n"),
 
-	io:format("rpc:call(non_std_child1:ping()): ~p~n", 
+	io:format("rpc:call(non_std_child1:get_state()): ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
-			non_std_child1, ping, [])
+			non_std_child1, get_state, [])
 		 ]),
 	io:format("rpc:call(non_std_child2:ping()): ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
@@ -160,6 +160,11 @@ main(_) ->
 %%
 	io:format("~n************** CRASH THE WORLD!!!! ***************~n"),
 	io:format("***** Even best_friendly_fire_victim is unreachable *****~n"),
+
+	BestSupPidBefore = rpc:call('suptest@richsmac.ecollege-dev.com',
+			erlang, whereis, [best_sup]),
+	NonStdSupPidBefore = rpc:call('suptest@richsmac.ecollege-dev.com',
+			erlang, whereis, [non_std_sup]),
 	
 	%% Wait a bit so we don't exceed the application's restart intensity
 	io:format("rpc:call(timer:sleep()): ~p~n", 
@@ -173,16 +178,53 @@ main(_) ->
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
 			non_std_child1, crash, [])
 		 ]),
+	io:format("rpc:call(best_friendly_fire_victim:ping()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			best_friendly_fire_victim, ping, [])
+		 ]),
 	io:format("rpc:call(non_std_child1:crash()) on suptest_app: ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
 			non_std_child1, crash, [])
 		 ]),
-		 
+	io:format("rpc:call(best_friendly_fire_victim:ping()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			best_friendly_fire_victim, ping, [])
+		 ]),
+	io:format("rpc:call(non_std_child1:crash()) on suptest_app: ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			non_std_child1, crash, [])
+		 ]),
 	io:format("rpc:call(best_friendly_fire_victim:ping()): ~p~n", 
 		[rpc:call('suptest@richsmac.ecollege-dev.com',
 			best_friendly_fire_victim, ping, [])
 		 ]),
 
+	io:format("***** Wait for all gen_servers to be restarted and accept requests*****~n"),
+	
+	%% Wait a bit so we don't exceed the application's restart intensity
+	io:format("rpc:call(timer:sleep()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			timer, sleep, [1500])
+		 ]),
+
+	BestSupPidAfter = rpc:call('suptest@richsmac.ecollege-dev.com',
+			erlang, whereis, [best_sup]),
+	NonStdSupPidAfter = rpc:call('suptest@richsmac.ecollege-dev.com',
+			erlang, whereis, [non_std_sup]),
+
+	%% Checking the supervisors's PIDs verifies that they were restarted as a
+	%% result of the crashes provoked above.
+	io:format("BestSupPidBefore ~p; BestSupPidAfter ~p.  They should be different~n", [BestSupPidBefore, BestSupPidAfter]),
+	io:format("NonStdSupPidBefore ~p; NonStdSupPidAfter ~p.  They should be different~n", [NonStdSupPidBefore, NonStdSupPidAfter]),
+	
+	io:format("rpc:call(best_friendly_fire_victim:ping()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			best_friendly_fire_victim, ping, [])
+		 ]),
+	io:format("rpc:call(non_std_child2:ping()): ~p~n", 
+		[rpc:call('suptest@richsmac.ecollege-dev.com',
+			non_std_child2, ping, [])
+		 ]),
 %%
 %% CLEANUP & STOP test
 %%
